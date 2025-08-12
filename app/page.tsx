@@ -1,151 +1,162 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { Canvas } from "@react-three/fiber";
+import { OrbitControls, Environment } from "@react-three/drei";
+import { useRef, useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
+import * as THREE from "three";
 
-export default function Home() {
-  const [progress, setProgress] = useState(0);
-  const [currentText, setCurrentText] = useState(0);
-  
-  const constructionTexts = [
-    "Building something amazing...",
-    "Crafting the future...",
-    "Assembling greatness...",
-    "Creating magic...",
-    "Engineering excellence..."
-  ];
+const isMobile = typeof window !== "undefined" && window.matchMedia("(max-width: 768px)").matches;
+
+const Scene = () => {
+  return (
+    <>
+      <OrbitControls
+        enableZoom={!isMobile}
+        enablePan={!isMobile}
+        enableRotate={true}
+        autoRotate
+        autoRotateSpeed={isMobile ? 1.2 : 3}
+        target={[0, 0, 0]}
+        maxPolarAngle={Math.PI * 0.6}
+        minPolarAngle={Math.PI * 0.3}
+        maxAzimuthAngle={Math.PI * 0.8}
+        minAzimuthAngle={-Math.PI * 0.8}
+      />
+
+      <ambientLight intensity={isMobile ? 0.9 : 0.5} />
+      <directionalLight position={[5, 5, 5]} intensity={isMobile ? 0.7 : 0.5} color="#ffffff" />
+      <pointLight position={[0, 10, 0]} intensity={isMobile ? 0.5 : 0.3} color="#ffffff" />
+
+      <Environment files="/assets/skybox.jpg" background resolution={isMobile ? 256 : 512} />
+    </>
+  );
+};
+
+
+
+const BackgroundMusic = () => {
+  const audioRef = useRef<HTMLAudioElement>(null);
 
   useEffect(() => {
-    // Animate progress bar
-    const progressInterval = setInterval(() => {
-      setProgress(prev => {
-        if (prev >= 100) {
-          clearInterval(progressInterval);
-          return 100;
+    if (audioRef.current) {
+      audioRef.current.volume = 0.3;
+      audioRef.current.loop = true;
+      const playMusic = async () => {
+        try {
+          await audioRef.current?.play();
+        } catch (error) {
+          console.log("Autoplay prevented by browser. User interaction required.");
         }
-        return prev + Math.random() * 15;
-      });
-    }, 1000);
-
-    // Animate text
-    const textInterval = setInterval(() => {
-      setCurrentText(prev => (prev + 1) % constructionTexts.length);
-    }, 2000);
-
-    return () => {
-      clearInterval(progressInterval);
-      clearInterval(textInterval);
-    };
+      };
+      playMusic();
+    }
   }, []);
 
+  return <audio ref={audioRef} src="/assets/bgm.mp3" preload="auto" />;
+};
+
+export default function SkyboxPage() {
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [isCanvasReady, setIsCanvasReady] = useState<boolean>(false);
+  const router = useRouter();
+
+  useEffect(() => {
+    // Show loading for at least 3 seconds, then wait for canvas to be ready
+    const timer = setTimeout(() => {
+      if (isCanvasReady) {
+        setIsLoading(false);
+      }
+    }, 3000);
+
+    return () => clearTimeout(timer);
+  }, [isCanvasReady]);
+
+  useEffect(() => {
+    // Set canvas as ready after a short delay to simulate loading
+    const canvasTimer = setTimeout(() => setIsCanvasReady(true), 1500);
+    return () => clearTimeout(canvasTimer);
+  }, []);
+
+  const handleExplore = () => {
+    router.push("/events");
+  };
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-black via-gray-900 to-gray-800 flex items-center justify-center p-4 relative overflow-hidden">
-      {/* Animated background elements */}
-      <div className="absolute inset-0 overflow-hidden">
-        <div className="absolute -top-40 -right-40 w-80 h-80 bg-gray-600 rounded-full mix-blend-multiply filter blur-xl opacity-30 animate-blob"></div>
-        <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-gray-500 rounded-full mix-blend-multiply filter blur-xl opacity-30 animate-blob animation-delay-2000"></div>
-        <div className="absolute top-40 left-40 w-80 h-80 bg-gray-700 rounded-full mix-blend-multiply filter blur-xl opacity-30 animate-blob animation-delay-4000"></div>
-      </div>
-
-      {/* Main content */}
-      <div className="relative z-10 text-center max-w-2xl mx-auto">
-        {/* Icon */}
-        <div className="mb-8">
-          <div className="inline-flex items-center justify-center w-24 h-24 bg-white/10 backdrop-blur-sm rounded-full border border-white/20 mb-6">
-            <svg 
-              className="w-12 h-12 text-white animate-pulse" 
-              fill="none" 
-              stroke="currentColor" 
-              viewBox="0 0 24 24"
-            >
-              <path 
-                strokeLinecap="round" 
-                strokeLinejoin="round" 
-                strokeWidth={2} 
-                d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z" 
-              />
-            </svg>
-          </div>
-        </div>
-
-        {/* Xplore25 Heading */}
-        <h1 className="text-6xl md:text-8xl font-bold text-white mb-2 tracking-tight">
-          <span className="bg-gradient-to-r from-gray-300 via-white to-gray-400 bg-clip-text text-transparent">
-            Xplore25
-          </span>
-        </h1>
-
-        {/* Department of CSE Subtitle */}
-        <p className="text-xl md:text-2xl text-gray-400 mb-6 font-medium tracking-wide">
-          Department of CSE
-        </p>
-
-        {/* Under Construction Title */}
-        <h2 className="text-4xl md:text-6xl font-bold text-white mb-6 tracking-tight">
-          <span className="bg-gradient-to-r from-gray-400 via-gray-300 to-white bg-clip-text text-transparent">
-            Under Construction
-          </span>
-        </h2>
-
-        {/* Subtitle */}
-        <p className="text-xl md:text-2xl text-gray-300 mb-8 font-light">
-          {constructionTexts[currentText]}
-        </p>
-
-        {/* Progress bar */}
-        <div className="mb-8">
-          <div className="w-full bg-white/20 rounded-full h-3 backdrop-blur-sm">
-            <div 
-              className="bg-gradient-to-r from-gray-400 via-white to-gray-300 h-3 rounded-full transition-all duration-1000 ease-out"
-              style={{ width: `${Math.min(progress, 100)}%` }}
-            ></div>
-          </div>
-          <p className="text-gray-400 text-sm mt-2">
-            Progress: {Math.round(Math.min(progress, 100))}%
-          </p>
-        </div>
-
-        {/* Features grid */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
-          {[
-            { icon: "⚡", title: "Fast", desc: "Lightning speed" },
-            { icon: "🎯", title: "Precise", desc: "Perfect execution" },
-            { icon: "🛡️", title: "Secure", desc: "Built with safety" }
-          ].map((feature, index) => (
-            <div 
-              key={index}
-              className="bg-white/10 backdrop-blur-sm rounded-lg p-4 border border-white/20 hover:bg-white/20 transition-all duration-300 transform hover:scale-105"
-            >
-              <div className="text-3xl mb-2">{feature.icon}</div>
-              <h3 className="text-white font-semibold">{feature.title}</h3>
-              <p className="text-gray-400 text-sm">{feature.desc}</p>
+    <div className="w-full h-screen bg-gray-900 relative overflow-hidden" style={{ touchAction: "none" }}>
+      {/* Loading Overlay */}
+      {isLoading && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center">
+          {/* Heavily Blurred Background */}
+          <div className="absolute inset-0 bg-black/80 backdrop-blur-xl"></div>
+          
+          {/* Loading Popup */}
+          <div className="relative bg-gray-800/80 backdrop-blur-sm border-4 border-gray-600 rounded-lg p-8 max-w-md mx-4 text-center shadow-2xl">
+            {/* Minecraft-style border */}
+            <div className="absolute inset-1 border-2 border-t-gray-400 border-l-gray-400 border-r-gray-700 border-b-gray-700 rounded pointer-events-none"></div>
+            
+            <div className="relative z-10">
+              {/* Loading Icon */}
+              <div className="mb-6">
+                <div className="inline-flex items-center justify-center w-16 h-16 bg-gray-700 rounded-lg border-2 border-gray-500 mb-4">
+                  <div className="w-8 h-8 border-4 border-gray-400 border-t-white rounded-full animate-spin"></div>
+                </div>
+              </div>
+              
+              {/* Loading Text */}
+              <h2 className="text-2xl font-bold text-white mb-2 font-mono">Generating World...</h2>
+              <p className="text-gray-300 text-sm font-mono">Loading skybox and assets</p>
+              
+              {/* Progress Bar */}
+              <div className="mt-6 mb-4">
+                <div className="w-full bg-gray-700 rounded-full h-3 border-2 border-gray-600">
+                  <div 
+                    className="bg-gradient-to-r from-gray-400 via-white to-gray-300 h-full rounded-full transition-all duration-1000 ease-out"
+                    style={{ width: `${isCanvasReady ? 100 : 60}%` }}
+                  ></div>
+                </div>
+              </div>
+              
+              {/* Status Text */}
+              <p className="text-gray-400 text-xs font-mono">
+                {isCanvasReady ? "Ready to explore!" : "Loading 3D environment..."}
+              </p>
             </div>
-          ))}
+          </div>
         </div>
-
-        {/* Contact info */}
-        <div className="bg-white/10 backdrop-blur-sm rounded-lg p-6 border border-white/20">
-          <p className="text-gray-300 mb-2">Something exciting is coming soon!</p>
-          <p className="text-gray-400 text-sm">
-            Stay tuned for updates and be the first to know when we launch.
-          </p>
-        </div>
-
-        {/* Quick link to new page */}
-        <div className="mt-6">
-          <a
-            href="/ctf"
-            className="inline-block px-4 py-2 rounded border border-white/20 bg-white/10 hover:bg-white/20 transition"
-          >
-            Go to CTF →
-          </a>
-        </div>
-
-        {/* Floating elements */}
-        <div className="absolute top-10 left-10 w-4 h-4 bg-white rounded-full animate-bounce"></div>
-        <div className="absolute top-20 right-20 w-3 h-3 bg-gray-400 rounded-full animate-bounce animation-delay-1000"></div>
-        <div className="absolute bottom-20 left-20 w-2 h-2 bg-gray-300 rounded-full animate-bounce animation-delay-2000"></div>
-        <div className="absolute bottom-10 right-10 w-5 h-5 bg-white rounded-full animate-bounce animation-delay-3000"></div>
+      )}
+      <div className="w-full h-full absolute inset-0">
+        <Canvas
+          camera={{ position: [12, 0, -20], fov: isMobile ? 60 : 50, near: 0.1, far: 1000 }}
+          gl={{ antialias: !isMobile, alpha: false, powerPreference: isMobile ? "high-performance" : "default", failIfMajorPerformanceCaveat: false }}
+          dpr={isMobile ? 1 : [1, 2]}
+          performance={{ min: isMobile ? 0.1 : 0.5 }}
+          onCreated={({ gl }) => {
+            gl.setClearColor("#000000", 1);
+            if (!isMobile) {
+              gl.toneMapping = THREE.ACESFilmicToneMapping;
+              gl.toneMappingExposure = 1.2;
+            }
+          }}
+        >
+          <Scene />
+        </Canvas>
       </div>
+
+      {/* XPLORE Image Overlay */}
+      <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-20">
+        <div className="relative flex flex-col items-center gap-2">
+          {/* XPLORE Logo */}
+          <img
+            src="/xplore.png"
+            alt="XPLORE"
+            className="max-w-xs sm:max-w-md md:max-w-lg lg:max-w-xl w-auto h-auto drop-shadow-2xl cursor-pointer transition-transform duration-200 hover:scale-105"
+            style={{ filter: "drop-shadow(0 10px 20px rgba(0,0,0,0.5))", imageRendering: "pixelated" }}
+            onClick={handleExplore}
+          />
+        </div>
+      </div>
+      <BackgroundMusic />
     </div>
   );
 }

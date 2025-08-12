@@ -26,7 +26,7 @@ export default function Page() {
     <main className="relative min-h-screen">
       {/* Themed background */}
       <GraphicBackground src="/grass.png" size={64} opacity={0.25} overlayColor="rgba(0,0,0,0.15)" />
-      <EmeraldBackground imageSrc="/emerald.png" count={24} minSize={16} maxSize={32} opacity={0.5} />
+      <EmeraldBackground imageSrc="/Emerald.png" count={24} minSize={16} maxSize={32} opacity={0.5} />
 
       <div className="relative z-10 py-12">
         <div className="mb-8 text-center px-4">
