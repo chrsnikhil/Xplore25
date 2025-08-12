@@ -1,10 +1,10 @@
 "use client"
 
 import { cn } from "@/lib/utils"
-import { motion } from "framer-motion"
-import { type HTMLAttributes, forwardRef } from "react"
+import { motion, type HTMLMotionProps } from "framer-motion"
+import { forwardRef } from "react"
 
-interface MinecraftBubbleProps extends HTMLAttributes<HTMLDivElement> {
+interface MinecraftBubbleProps extends Omit<HTMLMotionProps<"div">, "ref"> {
   biome?: "nether" | "cherry" | "grassland" | "desert" | "ice" | "barren" | "caves"
   size?: "sm" | "md" | "lg"
   floating?: boolean
@@ -30,6 +30,7 @@ const MinecraftBubble = forwardRef<HTMLDivElement, MinecraftBubbleProps>(
   ({ className, biome = "grassland", size = "md", floating = false, children, ...props }, ref) => {
     return (
       <motion.div
+        ref={ref}
         initial={{ opacity: 0, scale: 0.8 }}
         animate={{
           opacity: 1,
@@ -48,7 +49,6 @@ const MinecraftBubble = forwardRef<HTMLDivElement, MinecraftBubbleProps>(
           className,
         )}
         style={{ imageRendering: "pixelated" }}
-        ref={ref}
         {...props}
       >
         {children}

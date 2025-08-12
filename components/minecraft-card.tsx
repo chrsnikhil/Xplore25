@@ -1,14 +1,15 @@
 "use client"
 
 import { cn } from "@/lib/utils"
-import { motion } from "framer-motion"
-import { type HTMLAttributes, forwardRef } from "react"
+import { motion, type HTMLMotionProps } from "framer-motion"
+import { forwardRef, type ReactNode } from "react"
 
-interface MinecraftCardProps extends HTMLAttributes<HTMLDivElement> {
+interface MinecraftCardProps extends Omit<HTMLMotionProps<"div">, "ref" | "children"> {
   title?: string
   icon?: string
   biome?: "nether" | "cherry" | "grassland" | "desert" | "ice" | "barren" | "caves"
   variant?: "default" | "elevated" | "flat"
+  children?: ReactNode
 }
 
 const biomeStyles = {
@@ -31,6 +32,7 @@ const MinecraftCard = forwardRef<HTMLDivElement, MinecraftCardProps>(
   ({ title, icon, biome = "grassland", variant = "default", children, className, ...props }, ref) => {
     return (
       <motion.div
+        ref={ref}
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         whileHover={{ scale: variant === "elevated" ? 1.02 : 1 }}
@@ -43,7 +45,6 @@ const MinecraftCard = forwardRef<HTMLDivElement, MinecraftCardProps>(
           className,
         )}
         style={{ imageRendering: "pixelated" }}
-        ref={ref}
         {...props}
       >
         {title && (

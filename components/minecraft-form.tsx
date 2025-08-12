@@ -1,12 +1,13 @@
 "use client"
 
 import { cn } from "@/lib/utils"
-import { motion } from "framer-motion"
-import { type FormHTMLAttributes, forwardRef } from "react"
+import { motion, type HTMLMotionProps } from "framer-motion"
+import { forwardRef, type ReactNode } from "react"
 
-interface MinecraftFormProps extends FormHTMLAttributes<HTMLFormElement> {
+interface MinecraftFormProps extends Omit<HTMLMotionProps<"form">, "ref" | "children"> {
   biome?: "nether" | "cherry" | "grassland" | "desert" | "ice" | "barren" | "caves"
   title?: string
+  children?: ReactNode
 }
 
 const biomeStyles = {
@@ -23,12 +24,12 @@ const MinecraftForm = forwardRef<HTMLFormElement, MinecraftFormProps>(
   ({ className, biome = "grassland", title, children, ...props }, ref) => {
     return (
       <motion.form
+        ref={ref}
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.3 }}
         className={cn("p-6 border-4 space-y-6 backdrop-blur-sm", "antialiased-off", biomeStyles[biome], className)}
         style={{ imageRendering: "pixelated" }}
-        ref={ref}
         {...props}
       >
         {title && (

@@ -1,10 +1,10 @@
 "use client"
 
 import { cn } from "@/lib/utils"
-import { motion } from "framer-motion"
-import { type InputHTMLAttributes, forwardRef } from "react"
+import { motion, type HTMLMotionProps } from "framer-motion"
+import { forwardRef } from "react"
 
-interface MinecraftInputProps extends InputHTMLAttributes<HTMLInputElement> {
+interface MinecraftInputProps extends Omit<HTMLMotionProps<"input">, "ref"> {
   biome?: "nether" | "cherry" | "grassland" | "desert" | "ice" | "barren" | "caves"
   label?: string
 }
@@ -31,6 +31,7 @@ const MinecraftInput = forwardRef<HTMLInputElement, MinecraftInputProps>(
       <div className="space-y-2">
         {label && <label className="block text-sm font-bold text-gray-200 font-mono">{label}</label>}
         <motion.input
+          ref={ref}
           whileFocus={{ scale: 1.02 }}
           transition={{ duration: 0.1 }}
           className={cn(
@@ -41,7 +42,6 @@ const MinecraftInput = forwardRef<HTMLInputElement, MinecraftInputProps>(
             className,
           )}
           style={{ imageRendering: "pixelated" }}
-          ref={ref}
           {...props}
         />
       </div>

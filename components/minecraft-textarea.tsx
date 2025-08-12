@@ -1,10 +1,10 @@
 "use client"
 
 import { cn } from "@/lib/utils"
-import { motion } from "framer-motion"
-import { type TextareaHTMLAttributes, forwardRef } from "react"
+import { motion, type HTMLMotionProps } from "framer-motion"
+import { forwardRef } from "react"
 
-interface MinecraftTextareaProps extends TextareaHTMLAttributes<HTMLTextAreaElement> {
+interface MinecraftTextareaProps extends Omit<HTMLMotionProps<"textarea">, "ref"> {
   biome?: "nether" | "cherry" | "grassland" | "desert" | "ice" | "barren" | "caves"
   label?: string
 }
@@ -31,6 +31,7 @@ const MinecraftTextarea = forwardRef<HTMLTextAreaElement, MinecraftTextareaProps
       <div className="space-y-2">
         {label && <label className="block text-sm font-bold text-gray-200 font-mono">{label}</label>}
         <motion.textarea
+          ref={ref}
           whileFocus={{ scale: 1.02 }}
           transition={{ duration: 0.1 }}
           className={cn(
@@ -41,7 +42,6 @@ const MinecraftTextarea = forwardRef<HTMLTextAreaElement, MinecraftTextareaProps
             className,
           )}
           style={{ imageRendering: "pixelated" }}
-          ref={ref}
           {...props}
         />
       </div>

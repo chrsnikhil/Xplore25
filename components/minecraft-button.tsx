@@ -1,10 +1,10 @@
 "use client"
 
 import { cn } from "@/lib/utils"
-import { motion } from "framer-motion"
-import { type ButtonHTMLAttributes, forwardRef } from "react"
+import { motion, type HTMLMotionProps } from "framer-motion"
+import { forwardRef } from "react"
 
-interface MinecraftButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
+interface MinecraftButtonProps extends Omit<HTMLMotionProps<"button">, "ref"> {
   variant?:
     | "grass"
     | "stone"
@@ -40,6 +40,7 @@ const MinecraftButton = forwardRef<HTMLButtonElement, MinecraftButtonProps>(
   ({ className, variant = "stone", biome = "grassland", children, ...props }, ref) => {
     return (
       <motion.button
+        ref={ref}
         whileHover={{
           scale: 1.02,
           y: -2,
@@ -64,7 +65,6 @@ const MinecraftButton = forwardRef<HTMLButtonElement, MinecraftButtonProps>(
           className,
         )}
         style={{ imageRendering: "pixelated" }}
-        ref={ref}
         {...props}
       >
         {children}
